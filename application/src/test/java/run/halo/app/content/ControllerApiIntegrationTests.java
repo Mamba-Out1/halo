@@ -97,7 +97,9 @@ class ControllerApiIntegrationTests {
 
         var updatedPost = webTestClient
                 .put()
-                .uri("/apis/api.console.halo.run/v1alpha1/posts/{name}/content", createdPost.getMetadata().getName())
+                .uri(
+                        "/apis/api.console.halo.run/v1alpha1/posts/{name}/content",
+                        createdPost.getMetadata().getName())
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue("""
                         {

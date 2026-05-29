@@ -36,19 +36,20 @@
 
 ### ✅ 3. 完整文档
 
-| 文档 | 路径 | 用途 |
-|------|------|------|
-| **快速入门指南** | `docs/integration-testing-quickstart.md` | 30分钟快速上手 |
-| **详细测试指南** | `docs/integration-testing-guide.md` | 深入学习测试模式 |
-| **CI 集成指南** | `docs/ci-integration-guide.md` | CI/CD 配置和维护 |
-| **项目总结** | `docs/integration-testing-summary.md` | 项目成果总结 |
-| **文档中心** | `docs/testing/README.md` | 文档导航中心 |
+|     文档      |                    路径                    |     用途      |
+|-------------|------------------------------------------|-------------|
+| **快速入门指南**  | `docs/integration-testing-quickstart.md` | 30分钟快速上手    |
+| **详细测试指南**  | `docs/integration-testing-guide.md`      | 深入学习测试模式    |
+| **CI 集成指南** | `docs/ci-integration-guide.md`           | CI/CD 配置和维护 |
+| **项目总结**    | `docs/integration-testing-summary.md`    | 项目成果总结      |
+| **文档中心**    | `docs/testing/README.md`                 | 文档导航中心      |
 
 ### ✅ 4. CI 流程图
 
 详见 `docs/ci-integration-guide.md` 和 `docs/integration-testing-summary.md`
 
 **流程概览**:
+
 ```
 代码提交 → 环境设置 → 代码检查 → 编译构建 
 → 并行测试（H2/MySQL/PostgreSQL） 
@@ -196,13 +197,13 @@ docker stop halo-test-mysql && docker rm halo-test-mysql
 
 ### 测试层次
 
-| 层次 | 测试内容 | 测试方法数 |
-|------|---------|-----------|
-| **Controller** | HTTP API 测试 | 4 |
-| **Service** | 业务逻辑测试 | 3 |
-| **Repository** | 数据持久化测试 | 3 |
-| **完整流程** | 端到端测试 | 3 |
-| **异常处理** | 错误场景测试 | 2 |
+|       层次       |    测试内容     | 测试方法数 |
+|----------------|-------------|-------|
+| **Controller** | HTTP API 测试 | 4     |
+| **Service**    | 业务逻辑测试      | 3     |
+| **Repository** | 数据持久化测试     | 3     |
+| **完整流程**       | 端到端测试       | 3     |
+| **异常处理**       | 错误场景测试      | 2     |
 
 ### 测试场景
 

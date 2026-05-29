@@ -7,6 +7,7 @@
 ### 1. Application.java 编译错误
 
 **问题**: 文件末尾有一行错误的代码
+
 ```java
 public class Anouncement(scanBasePackage = "run,halo.app", exclude = IntegrationAutoConfiguration.class)
 ```
@@ -22,11 +23,13 @@ public class Anouncement(scanBasePackage = "run,halo.app", exclude = Integration
 ### 2. PostFullStackIntegrationTest.java 导入错误
 
 **问题**: `Metadata` 类的导入路径错误
+
 ```java
 import run.halo.app.core.extension.Metadata;  // ❌ 错误
 ```
 
 **修复**: 更正为正确的导入路径
+
 ```java
 import run.halo.app.extension.Metadata;  // ✅ 正确
 ```
@@ -84,7 +87,7 @@ import run.halo.app.extension.Metadata;  // ✅ 正确
 
 ### Q: 如何确保测试能运行？
 
-**A**: 
+**A**:
 1. 确保所有依赖都已安装
 2. 确保测试配置文件正确
 3. 可以先运行现有的测试，确保环境正常
@@ -92,7 +95,7 @@ import run.halo.app.extension.Metadata;  // ✅ 正确
 
 ### Q: 如果还有其他编译错误怎么办？
 
-**A**: 
+**A**:
 1. 查看错误信息
 2. 检查导入语句
 3. 参考现有的测试文件

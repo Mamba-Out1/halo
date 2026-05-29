@@ -20,7 +20,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
-import run.halo.app.content.ContentRequest;
 import run.halo.app.content.PostRequest;
 import run.halo.app.core.extension.Role;
 import run.halo.app.core.extension.content.Post;
@@ -31,9 +30,9 @@ import run.halo.app.infra.utils.JsonUtils;
 
 /**
  * 完整的集成测试示例：测试从 Controller 到 Repository 到 Database 的完整流程
- * 
- * 测试架构：Controller → Service → Repository → Database (H2)
- * 
+ *
+ * <p>测试架构：Controller → Service → Repository → Database (H2)
+ *
  * @author Integration Test Team
  * @since 2.0.0
  */
@@ -66,7 +65,7 @@ public class PostFullStackIntegrationTest {
         role.getMetadata().setName("admin-role");
         role.setRules(List.of(rule));
         when(roleService.listDependenciesFlux(anySet())).thenReturn(Flux.just(role));
-        
+
         // 配置 CSRF 令牌
         webTestClient = webTestClient.mutateWith(csrf());
     }
@@ -84,7 +83,8 @@ public class PostFullStackIntegrationTest {
                     .contentType(MediaType.APPLICATION_JSON)
                     .bodyValue(createPostRequest("Controller 测试文章", "controller-test-post"))
                     .exchange()
-                    .expectStatus().isOk()
+                    .expectStatus()
+                    .isOk()
                     .expectBody(Post.class)
                     .value(post -> {
                         assertThat(post.getMetadata().getName()).startsWith("post-");
@@ -105,10 +105,12 @@ public class PostFullStackIntegrationTest {
             // 通过 API 获取
             webTestClient
                     .get()
-                    .uri("/apis/content.halo.run/v1alpha1/posts/{name}",
+                    .uri(
+                            "/apis/content.halo.run/v1alpha1/posts/{name}",
                             createdPost.getMetadata().getName())
                     .exchange()
-                    .expectStatus().isOk()
+                    .expectStatus()
+                    .isOk()
                     .expectBody(Post.class)
                     .value(post -> {
                         assertThat(post.getMetadata().getName())
@@ -125,12 +127,14 @@ public class PostFullStackIntegrationTest {
 
             webTestClient
                     .put()
-                    .uri("/apis/content.halo.run/v1alpha1/posts/{name}",
+                    .uri(
+                            "/apis/content.halo.run/v1alpha1/posts/{name}",
                             createdPost.getMetadata().getName())
                     .contentType(MediaType.APPLICATION_JSON)
                     .bodyValue(createdPost)
                     .exchange()
-                    .expectStatus().isOk()
+                    .expectStatus()
+                    .isOk()
                     .expectBody(Post.class)
                     .value(post -> {
                         assertThat(post.getSpec().getTitle()).isEqualTo("更新后的标题");
@@ -144,18 +148,22 @@ public class PostFullStackIntegrationTest {
 
             webTestClient
                     .delete()
-                    .uri("/apis/content.halo.run/v1alpha1/posts/{name}",
+                    .uri(
+                            "/apis/content.halo.run/v1alpha1/posts/{name}",
                             createdPost.getMetadata().getName())
                     .exchange()
-                    .expectStatus().isOk();
+                    .expectStatus()
+                    .isOk();
 
             // 验证已标记为删除（Halo 使用软删除）
             webTestClient
                     .get()
-                    .uri("/apis/content.halo.run/v1alpha1/posts/{name}",
+                    .uri(
+                            "/apis/content.halo.run/v1alpha1/posts/{name}",
                             createdPost.getMetadata().getName())
                     .exchange()
-                    .expectStatus().isOk()
+                    .expectStatus()
+                    .isOk()
                     .expectBody(Post.class)
                     .value(post -> {
                         // 验证有删除时间戳（软删除标记）
@@ -179,7 +187,8 @@ public class PostFullStackIntegrationTest {
                     .contentType(MediaType.APPLICATION_JSON)
                     .bodyValue(postRequest)
                     .exchange()
-                    .expectStatus().isOk()
+                    .expectStatus()
+                    .isOk()
                     .expectBody(Post.class)
                     .returnResult()
                     .getResponseBody();
@@ -207,12 +216,14 @@ public class PostFullStackIntegrationTest {
 
             webTestClient
                     .put()
-                    .uri("/apis/api.console.halo.run/v1alpha1/posts/{name}/content",
+                    .uri(
+                            "/apis/api.console.halo.run/v1alpha1/posts/{name}/content",
                             createdPost.getMetadata().getName())
                     .contentType(MediaType.APPLICATION_JSON)
                     .bodyValue(contentRequest)
                     .exchange()
-                    .expectStatus().isOk()
+                    .expectStatus()
+                    .isOk()
                     .expectBody(Post.class)
                     .value(post -> {
                         assertThat(post.getSpec().getHeadSnapshot()).isNotBlank();
@@ -233,7 +244,8 @@ public class PostFullStackIntegrationTest {
                     .contentType(MediaType.APPLICATION_JSON)
                     .bodyValue(postRequest)
                     .exchange()
-                    .expectStatus().isOk()
+                    .expectStatus()
+                    .isOk()
                     .expectBody(Post.class)
                     .value(post -> {
                         assertThat(post.getSpec().getReleaseSnapshot()).isNotBlank();
@@ -253,9 +265,8 @@ public class PostFullStackIntegrationTest {
             var createdPost = createTestPost("数据库测试", "db-test");
 
             // 直接从数据库查询
-            StepVerifier.create(
-                    extensionClient.get(Post.class, createdPost.getMetadata().getName())
-            )
+            StepVerifier.create(extensionClient.get(
+                            Post.class, createdPost.getMetadata().getName()))
                     .assertNext(post -> {
                         assertThat(post.getMetadata().getName())
                                 .isEqualTo(createdPost.getMetadata().getName());
@@ -275,19 +286,20 @@ public class PostFullStackIntegrationTest {
             createdPost.getSpec().setTitle("更新后的标题");
             var updatedPost = webTestClient
                     .put()
-                    .uri("/apis/content.halo.run/v1alpha1/posts/{name}",
+                    .uri(
+                            "/apis/content.halo.run/v1alpha1/posts/{name}",
                             createdPost.getMetadata().getName())
                     .contentType(MediaType.APPLICATION_JSON)
                     .bodyValue(createdPost)
                     .exchange()
-                    .expectStatus().isOk()
+                    .expectStatus()
+                    .isOk()
                     .expectBody(Post.class)
                     .returnResult()
                     .getResponseBody();
 
             assertThat(updatedPost).isNotNull();
-            assertThat(updatedPost.getMetadata().getVersion())
-                    .isGreaterThan(originalVersion);
+            assertThat(updatedPost.getMetadata().getVersion()).isGreaterThan(originalVersion);
         }
 
         @Test
@@ -299,11 +311,8 @@ public class PostFullStackIntegrationTest {
             createTestPost("其他文章", "other-post");
 
             // 查询标题包含"查询测试"的文章
-            StepVerifier.create(
-                    extensionClient.list(Post.class,
-                            post -> post.getSpec().getTitle().contains("查询测试"),
-                            null)
-            )
+            StepVerifier.create(extensionClient.list(
+                            Post.class, post -> post.getSpec().getTitle().contains("查询测试"), null))
                     .expectNextCount(2)
                     .verifyComplete();
         }
@@ -323,7 +332,8 @@ public class PostFullStackIntegrationTest {
                     .contentType(MediaType.APPLICATION_JSON)
                     .bodyValue(createPostRequest("生命周期测试", "lifecycle-test"))
                     .exchange()
-                    .expectStatus().isOk()
+                    .expectStatus()
+                    .isOk()
                     .expectBody(Post.class)
                     .returnResult()
                     .getResponseBody();
@@ -341,7 +351,8 @@ public class PostFullStackIntegrationTest {
             // 3. 更新内容
             webTestClient
                     .put()
-                    .uri("/apis/api.console.halo.run/v1alpha1/posts/{name}/content",
+                    .uri(
+                            "/apis/api.console.halo.run/v1alpha1/posts/{name}/content",
                             createdPost.getMetadata().getName())
                     .contentType(MediaType.APPLICATION_JSON)
                     .bodyValue("""
@@ -352,23 +363,26 @@ public class PostFullStackIntegrationTest {
                             }
                             """)
                     .exchange()
-                    .expectStatus().isOk();
+                    .expectStatus()
+                    .isOk();
 
             // 4. 发布文章 - 先获取最新版本
             var latestPost = extensionClient
                     .get(Post.class, createdPost.getMetadata().getName())
                     .block();
             assertThat(latestPost).isNotNull();
-            
+
             latestPost.getSpec().setPublish(true);
             var publishedPost = webTestClient
                     .put()
-                    .uri("/apis/content.halo.run/v1alpha1/posts/{name}",
+                    .uri(
+                            "/apis/content.halo.run/v1alpha1/posts/{name}",
                             createdPost.getMetadata().getName())
                     .contentType(MediaType.APPLICATION_JSON)
                     .bodyValue(latestPost)
                     .exchange()
-                    .expectStatus().isOk()
+                    .expectStatus()
+                    .isOk()
                     .expectBody(Post.class)
                     .returnResult()
                     .getResponseBody();
@@ -379,10 +393,12 @@ public class PostFullStackIntegrationTest {
             // 5. 查询已发布的文章
             webTestClient
                     .get()
-                    .uri("/apis/content.halo.run/v1alpha1/posts/{name}",
+                    .uri(
+                            "/apis/content.halo.run/v1alpha1/posts/{name}",
                             createdPost.getMetadata().getName())
                     .exchange()
-                    .expectStatus().isOk()
+                    .expectStatus()
+                    .isOk()
                     .expectBody(Post.class)
                     .value(post -> {
                         assertThat(post.getSpec().getPublish()).isTrue();
@@ -391,18 +407,22 @@ public class PostFullStackIntegrationTest {
             // 6. 删除文章
             webTestClient
                     .delete()
-                    .uri("/apis/content.halo.run/v1alpha1/posts/{name}",
+                    .uri(
+                            "/apis/content.halo.run/v1alpha1/posts/{name}",
                             createdPost.getMetadata().getName())
                     .exchange()
-                    .expectStatus().isOk();
+                    .expectStatus()
+                    .isOk();
 
             // 7. 验证已标记为删除（软删除）
             webTestClient
                     .get()
-                    .uri("/apis/content.halo.run/v1alpha1/posts/{name}",
+                    .uri(
+                            "/apis/content.halo.run/v1alpha1/posts/{name}",
                             createdPost.getMetadata().getName())
                     .exchange()
-                    .expectStatus().isOk()
+                    .expectStatus()
+                    .isOk()
                     .expectBody(Post.class)
                     .value(post -> {
                         assertThat(post.getMetadata().getDeletionTimestamp()).isNotNull();
@@ -413,9 +433,8 @@ public class PostFullStackIntegrationTest {
         @DisplayName("应该正确处理事务回滚")
         void shouldHandleTransactionRollback() {
             // 获取创建前的文章数量
-            var countBefore = extensionClient.list(Post.class, null, null)
-                    .collectList()
-                    .block();
+            var countBefore =
+                    extensionClient.list(Post.class, null, null).collectList().block();
             assertThat(countBefore).isNotNull();
             var sizeBefore = countBefore.size();
 
@@ -428,12 +447,12 @@ public class PostFullStackIntegrationTest {
                     .contentType(MediaType.APPLICATION_JSON)
                     .bodyValue(invalidRequest)
                     .exchange()
-                    .expectStatus().is4xxClientError();
+                    .expectStatus()
+                    .is4xxClientError();
 
             // 验证数据库中没有创建新记录
-            var countAfter = extensionClient.list(Post.class, null, null)
-                    .collectList()
-                    .block();
+            var countAfter =
+                    extensionClient.list(Post.class, null, null).collectList().block();
             assertThat(countAfter).isNotNull();
             assertThat(countAfter.size()).isEqualTo(sizeBefore);
         }
@@ -454,36 +473,42 @@ public class PostFullStackIntegrationTest {
             // 验证所有更新都成功
             var updated1 = webTestClient
                     .put()
-                    .uri("/apis/content.halo.run/v1alpha1/posts/{name}",
+                    .uri(
+                            "/apis/content.halo.run/v1alpha1/posts/{name}",
                             post1.getMetadata().getName())
                     .contentType(MediaType.APPLICATION_JSON)
                     .bodyValue(post1)
                     .exchange()
-                    .expectStatus().isOk()
+                    .expectStatus()
+                    .isOk()
                     .expectBody(Post.class)
                     .returnResult()
                     .getResponseBody();
 
             var updated2 = webTestClient
                     .put()
-                    .uri("/apis/content.halo.run/v1alpha1/posts/{name}",
+                    .uri(
+                            "/apis/content.halo.run/v1alpha1/posts/{name}",
                             post2.getMetadata().getName())
                     .contentType(MediaType.APPLICATION_JSON)
                     .bodyValue(post2)
                     .exchange()
-                    .expectStatus().isOk()
+                    .expectStatus()
+                    .isOk()
                     .expectBody(Post.class)
                     .returnResult()
                     .getResponseBody();
 
             var updated3 = webTestClient
                     .put()
-                    .uri("/apis/content.halo.run/v1alpha1/posts/{name}",
+                    .uri(
+                            "/apis/content.halo.run/v1alpha1/posts/{name}",
                             post3.getMetadata().getName())
                     .contentType(MediaType.APPLICATION_JSON)
                     .bodyValue(post3)
                     .exchange()
-                    .expectStatus().isOk()
+                    .expectStatus()
+                    .isOk()
                     .expectBody(Post.class)
                     .returnResult()
                     .getResponseBody();
@@ -499,9 +524,7 @@ public class PostFullStackIntegrationTest {
 
     // ==================== 辅助方法 ====================
 
-    /**
-     * 创建测试文章
-     */
+    /** 创建测试文章 */
     private Post createTestPost(String title, String slug) {
         return webTestClient
                 .post()
@@ -509,15 +532,14 @@ public class PostFullStackIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(createPostRequest(title, slug))
                 .exchange()
-                .expectStatus().isOk()
+                .expectStatus()
+                .isOk()
                 .expectBody(Post.class)
                 .returnResult()
                 .getResponseBody();
     }
 
-    /**
-     * 创建文章请求对象
-     */
+    /** 创建文章请求对象 */
     private PostRequest createPostRequest(String title, String slug) {
         var payload = String.format("""
                 {

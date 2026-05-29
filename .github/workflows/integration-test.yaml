@@ -123,6 +123,7 @@ jobs:
         run: |
           ./gradlew :application:test \
             --tests "*IntegrationTest*" \
+            --tests "*IntegrationTests*" \
             --configuration-cache \
             --configuration-cache-problems=warn \
             --no-daemon
@@ -176,6 +177,7 @@ jobs:
         run: |
           ./gradlew :application:test \
             --tests "*IntegrationTest*" \
+            --tests "*IntegrationTests*" \
             --configuration-cache \
             --configuration-cache-problems=warn \
             --no-daemon

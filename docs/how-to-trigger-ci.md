@@ -161,33 +161,33 @@ git push
 ### 在 Actions 页面查看
 
 1. **访问 Actions 页面**
+
    ```
    https://github.com/你的用户名/halo/actions
    ```
-
 2. **查看工作流运行列表**
-   
+
    你会看到类似这样的列表：
+
    ```
    ✅ Integration Tests #3
       main branch • 5 minutes ago • Success
-   
+
    🟡 Integration Tests #2
       main branch • 10 minutes ago • In progress
-   
+
    ❌ Integration Tests #1
       main branch • 1 hour ago • Failed
    ```
-
 3. **点击某个运行记录**
-   
+
    查看详细信息：
    - 运行时间
    - 各个 Job 的状态
    - 日志输出
 
 4. **查看具体的 Job**
-   
+
    点击某个 Job（如 `unit-tests`）查看：
    - 每个步骤的执行情况
    - 详细的日志输出
@@ -272,18 +272,15 @@ git push -u origin main
    - GitHub 收到你的推送
    - 检查 `.github/workflows/` 目录
    - 发现工作流配置文件
-
 2. **触发工作流**
    - 根据 `on:` 配置判断是否触发
    - 创建工作流运行实例
    - 分配运行器（Ubuntu 虚拟机）
-
 3. **执行测试**
    - 检出代码
    - 设置环境（JDK、Node.js 等）
    - 运行测试
    - 生成报告
-
 4. **显示结果**
    - 在 Actions 页面显示状态
    - 发送通知（如果配置了）
@@ -302,6 +299,7 @@ git push -u origin main
 4. 查看 Summary 部分
 
 **你会看到**:
+
 ```markdown
 # 🧪 测试报告摘要
 
@@ -321,11 +319,12 @@ git push -u origin main
 2. 点击某个工作流运行
 3. 滚动到页面底部
 4. 在 **Artifacts** 部分下载：
-   - `unit-test-reports`
-   - `mysql-integration-test-reports`
-   - `postgresql-integration-test-reports`
+- `unit-test-reports`
+- `mysql-integration-test-reports`
+- `postgresql-integration-test-reports`
 
 **解压后查看**:
+
 ```bash
 # 解压下载的文件
 unzip unit-test-reports.zip
@@ -339,6 +338,7 @@ xdg-open index.html  # Linux
 ### 3. 查看覆盖率（Codecov）
 
 如果配置了 Codecov，访问：
+
 ```
 https://codecov.io/gh/你的用户名/halo
 ```
@@ -355,6 +355,7 @@ https://codecov.io/gh/你的用户名/halo
 3. 工作流被禁用
 
 **解决方案**:
+
 ```bash
 # 检查文件路径
 ls -la .github/workflows/
@@ -386,11 +387,13 @@ cat .github/workflows/integration-test.yaml | grep "branches:"
 ### Q3: 如何跳过 CI
 
 **方法 1: 在提交信息中添加标记**
+
 ```bash
 git commit -m "docs: 更新文档 [skip ci]"
 ```
 
 **方法 2: 使用 `[ci skip]`**
+
 ```bash
 git commit -m "chore: 更新配置 [ci skip]"
 ```
@@ -403,6 +406,7 @@ git commit -m "chore: 更新配置 [ci skip]"
 3. 只在必要时运行完整测试
 
 **修改触发条件**:
+
 ```yaml
 on:
   push:
@@ -485,17 +489,17 @@ git push -u origin feature/my-feature
 触发 CI 测试很简单：
 
 1. **最简单**: 直接推送到 `main` 分支
+
    ```bash
    git push
    ```
-
 2. **推荐方式**: 创建 PR
+
    ```bash
    git checkout -b feature/my-feature
    git push -u origin feature/my-feature
    # 然后在 GitHub 上创建 PR
    ```
-
 3. **手动触发**: 在 Actions 页面点击 "Run workflow"
 
 **查看结果**:

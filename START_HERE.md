@@ -12,10 +12,12 @@
 
 1. **第一步**: 阅读 [快速入门指南](docs/integration-testing-quickstart.md) (30分钟)
 2. **第二步**: 运行第一个测试
+
    ```bash
    ./gradlew :application:test --tests PostFullStackIntegrationTest
    ```
 3. **第三步**: 查看测试报告
+
    ```bash
    open application/build/reports/tests/test/index.html
    ```
@@ -106,14 +108,14 @@ docker stop halo-test-mysql && docker rm halo-test-mysql
 
 ## 📚 完整文档列表
 
-| 文档 | 适合人群 | 时间 | 链接 |
-|------|---------|------|------|
-| **快速入门指南** | 🔰 初学者 | 30分钟 | [查看](docs/integration-testing-quickstart.md) |
-| **详细测试指南** | 👨‍💻 开发者 | 1小时 | [查看](docs/integration-testing-guide.md) |
-| **CI 集成指南** | 🔧 CI负责人 | 45分钟 | [查看](docs/ci-integration-guide.md) |
-| **项目总结** | 📊 所有人 | 15分钟 | [查看](docs/integration-testing-summary.md) |
-| **文档中心** | 📖 所有人 | - | [查看](docs/testing/README.md) |
-| **交付文档** | 📦 所有人 | 10分钟 | [查看](INTEGRATION_TESTING_DELIVERY.md) |
+|     文档      |   适合人群    |  时间  |                      链接                      |
+|-------------|-----------|------|----------------------------------------------|
+| **快速入门指南**  | 🔰 初学者    | 30分钟 | [查看](docs/integration-testing-quickstart.md) |
+| **详细测试指南**  | 👨‍💻 开发者 | 1小时  | [查看](docs/integration-testing-guide.md)      |
+| **CI 集成指南** | 🔧 CI负责人  | 45分钟 | [查看](docs/ci-integration-guide.md)           |
+| **项目总结**    | 📊 所有人    | 15分钟 | [查看](docs/integration-testing-summary.md)    |
+| **文档中心**    | 📖 所有人    | -    | [查看](docs/testing/README.md)                 |
+| **交付文档**    | 📦 所有人    | 10分钟 | [查看](INTEGRATION_TESTING_DELIVERY.md)        |
 
 ## 🎓 学习路径
 
@@ -186,7 +188,7 @@ halo/
 
 ### Q: 测试需要多长时间？
 
-**A**: 
+**A**:
 - 单元测试（H2）: ~5 分钟
 - 集成测试（MySQL）: ~10 分钟
 - 完整 CI 流程: ~30 分钟
@@ -197,14 +199,14 @@ halo/
 
 ### Q: 测试失败了怎么办？
 
-**A**: 
+**A**:
 1. 查看错误信息
 2. 单独运行失败的测试
 3. 查看 [故障排查](docs/ci-integration-guide.md#故障排查) 章节
 
 ### Q: 如何贡献代码？
 
-**A**: 
+**A**:
 1. Fork 项目
 2. 创建分支
 3. 编写测试

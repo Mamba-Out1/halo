@@ -6,11 +6,11 @@
 
 ### 🚀 快速开始
 
-| 文档 | 适合人群 | 预计时间 | 描述 |
-|------|---------|---------|------|
-| [**快速入门指南**](../integration-testing-quickstart.md) | 🔰 初学者 | 30 分钟 | 从零开始学习集成测试，包含完整示例 |
-| [**集成测试指南**](../integration-testing-guide.md) | 👨‍💻 开发者 | 1 小时 | 深入学习测试模式和最佳实践 |
-| [**CI/CD 集成指南**](../ci-integration-guide.md) | 🔧 CI 负责人 | 45 分钟 | 了解 CI/CD 流程和配置 |
+|                         文档                         |   适合人群    | 预计时间  |        描述         |
+|----------------------------------------------------|-----------|-------|-------------------|
+| [**快速入门指南**](../integration-testing-quickstart.md) | 🔰 初学者    | 30 分钟 | 从零开始学习集成测试，包含完整示例 |
+| [**集成测试指南**](../integration-testing-guide.md)      | 👨‍💻 开发者 | 1 小时  | 深入学习测试模式和最佳实践     |
+| [**CI/CD 集成指南**](../ci-integration-guide.md)       | 🔧 CI 负责人 | 45 分钟 | 了解 CI/CD 流程和配置    |
 
 ### 📚 详细文档
 
@@ -100,26 +100,26 @@
 
 ### 完整示例
 
-| 文件 | 描述 | 测试类型 |
-|------|------|---------|
+|                                                               文件                                                                |    描述     |                  测试类型                  |
+|---------------------------------------------------------------------------------------------------------------------------------|-----------|----------------------------------------|
 | [PostFullStackIntegrationTest.java](../../application/src/test/java/run/halo/app/integration/PostFullStackIntegrationTest.java) | 完整的集成测试示例 | Controller → Service → Repository → DB |
-| [PostIntegrationTests.java](../../application/src/test/java/run/halo/app/content/PostIntegrationTests.java) | 文章集成测试 | Service + Repository |
-| [ControllerApiIntegrationTests.java](../../application/src/test/java/run/halo/app/content/ControllerApiIntegrationTests.java) | API 集成测试 | Controller + Service |
+| [PostIntegrationTests.java](../../application/src/test/java/run/halo/app/content/PostIntegrationTests.java)                     | 文章集成测试    | Service + Repository                   |
+| [ControllerApiIntegrationTests.java](../../application/src/test/java/run/halo/app/content/ControllerApiIntegrationTests.java)   | API 集成测试  | Controller + Service                   |
 
 ### 测试配置
 
-| 文件 | 描述 |
-|------|------|
-| [application.yaml](../../application/src/test/resources/application.yaml) | 测试配置（H2） |
-| [application-mysql.yaml](../../application/src/test/resources/application-mysql.yaml) | MySQL 测试配置 |
+|                                               文件                                                |       描述        |
+|-------------------------------------------------------------------------------------------------|-----------------|
+| [application.yaml](../../application/src/test/resources/application.yaml)                       | 测试配置（H2）        |
+| [application-mysql.yaml](../../application/src/test/resources/application-mysql.yaml)           | MySQL 测试配置      |
 | [application-postgresql.yaml](../../application/src/test/resources/application-postgresql.yaml) | PostgreSQL 测试配置 |
 
 ### CI 配置
 
-| 文件 | 描述 |
-|------|------|
-| [halo.yaml](../../.github/workflows/halo.yaml) | 主 CI 工作流 |
-| [integration-test.yaml](../../.github/workflows/integration-test.yaml) | 集成测试工作流 |
+|                                   文件                                   |    描述    |
+|------------------------------------------------------------------------|----------|
+| [halo.yaml](../../.github/workflows/halo.yaml)                         | 主 CI 工作流 |
+| [integration-test.yaml](../../.github/workflows/integration-test.yaml) | 集成测试工作流  |
 
 ## 🛠️ 常用命令
 
@@ -243,21 +243,21 @@ docker rm halo-test-mysql halo-test-postgres
 
 ### 覆盖率目标
 
-| 层次 | 目标覆盖率 | 当前覆盖率 |
-|------|-----------|-----------|
+|     层次     | 目标覆盖率 |   当前覆盖率    |
+|------------|-------|------------|
 | Controller | > 80% | 查看 Codecov |
-| Service | > 90% | 查看 Codecov |
+| Service    | > 90% | 查看 Codecov |
 | Repository | > 85% | 查看 Codecov |
-| 整体 | > 80% | 查看 Codecov |
+| 整体         | > 80% | 查看 Codecov |
 
 ### 性能基准
 
-| 指标 | 目标 | 说明 |
-|------|------|------|
-| 单元测试执行时间 | < 5 分钟 | H2 内存数据库 |
+|    指标    |   目标    |        说明        |
+|----------|---------|------------------|
+| 单元测试执行时间 | < 5 分钟  | H2 内存数据库         |
 | 集成测试执行时间 | < 15 分钟 | MySQL/PostgreSQL |
-| 总 CI 时间 | < 30 分钟 | 包括构建和测试 |
-| 测试成功率 | > 99% | 排除不稳定测试 |
+| 总 CI 时间  | < 30 分钟 | 包括构建和测试          |
+| 测试成功率    | > 99%   | 排除不稳定测试          |
 
 ## 🔗 相关资源
 
@@ -290,21 +290,21 @@ docker rm halo-test-mysql halo-test-postgres
 
 ### Q2: 测试需要多长时间？
 
-**A**: 
+**A**:
 - 单元测试（H2）: ~5 分钟
 - 集成测试（MySQL）: ~10 分钟
 - 完整 CI 流程: ~30 分钟
 
 ### Q3: 如何查看测试报告？
 
-**A**: 
+**A**:
 1. 本地: `application/build/reports/tests/test/index.html`
 2. CI: GitHub Actions 页面的 Artifacts
 3. 覆盖率: https://codecov.io/gh/halo-dev/halo
 
 ### Q4: 测试失败了怎么办？
 
-**A**: 
+**A**:
 1. 查看错误信息和堆栈跟踪
 2. 单独运行失败的测试
 3. 使用 IDE 调试器
@@ -312,7 +312,7 @@ docker rm halo-test-mysql halo-test-postgres
 
 ### Q5: 如何贡献测试代码？
 
-**A**: 
+**A**:
 1. Fork 项目
 2. 创建新分支
 3. 编写测试
@@ -339,8 +339,8 @@ docker rm halo-test-mysql halo-test-postgres
 
 ## 📝 更新日志
 
-| 日期 | 版本 | 更新内容 |
-|------|------|---------|
+|     日期     |  版本   |       更新内容        |
+|------------|-------|-------------------|
 | 2024-05-29 | 1.0.0 | 初始版本，包含完整的测试文档和示例 |
 
 ---

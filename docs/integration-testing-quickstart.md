@@ -78,10 +78,10 @@ halo/
 
 ### 测试类命名规范
 
-| 命名模式 | 用途 | 示例 |
-|---------|------|------|
-| `*Test.java` | 单元测试 | `PostServiceTest.java` |
-| `*IntegrationTest.java` | 集成测试 | `PostIntegrationTest.java` |
+|               命名模式               |   用途   |                 示例                  |
+|----------------------------------|--------|-------------------------------------|
+| `*Test.java`                     | 单元测试   | `PostServiceTest.java`              |
+| `*IntegrationTest.java`          | 集成测试   | `PostIntegrationTest.java`          |
 | `*FullStackIntegrationTest.java` | 完整流程测试 | `PostFullStackIntegrationTest.java` |
 
 ## 🧪 第三步：运行第一个测试
@@ -504,7 +504,7 @@ git push origin feature/my-first-test
 
 ### Q2: 测试失败了怎么办？
 
-**A**: 
+**A**:
 1. 查看错误信息：`application/build/reports/tests/test/index.html`
 2. 查看日志：`application/build/test-results/test/`
 3. 单独运行失败的测试：`./gradlew :application:test --tests FailingTest`
@@ -522,7 +522,8 @@ git push origin feature/my-first-test
 
 ### Q5: 如何跳过测试？
 
-**A**: 
+**A**:
+
 ```bash
 # 跳过所有测试
 ./gradlew build -x test

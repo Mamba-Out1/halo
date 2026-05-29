@@ -5,12 +5,16 @@ spring:
     ansi:
       enabled: detect
   r2dbc:
+    # 支持通过环境变量覆盖数据库配置（用于 CI 环境）
+    url: ${SPRING_R2DBC_URL:}
+    username: ${SPRING_R2DBC_USERNAME:}
+    password: ${SPRING_R2DBC_PASSWORD:}
     name: halo-test
     generate-unique-name: true
   sql:
     init:
       mode: always
-      platform: h2
+      platform: ${SPRING_SQL_INIT_PLATFORM:h2}
   messages:
     basename: config.i18n.messages
 

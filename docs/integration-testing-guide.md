@@ -1,6 +1,7 @@
 # Halo 集成测试指南
 
 ## 目录
+
 1. [集成测试概述](#集成测试概述)
 2. [测试架构](#测试架构)
 3. [环境准备](#环境准备)
@@ -19,12 +20,12 @@ Controller → Service → Repository → Database (MySQL/H2)
 
 ### 测试层次
 
-| 层次 | 职责 | 测试重点 |
-|------|------|----------|
+|       层次       |        职责         |        测试重点        |
+|----------------|-------------------|--------------------|
 | **Controller** | HTTP 请求处理、路由、认证授权 | API 端点、请求/响应格式、状态码 |
-| **Service** | 业务逻辑、事务管理 | 业务规则、数据转换、异常处理 |
-| **Repository** | 数据持久化、查询 | CRUD 操作、复杂查询、数据一致性 |
-| **Database** | 数据存储 | 数据完整性、约束、事务 |
+| **Service**    | 业务逻辑、事务管理         | 业务规则、数据转换、异常处理     |
+| **Repository** | 数据持久化、查询          | CRUD 操作、复杂查询、数据一致性 |
+| **Database**   | 数据存储              | 数据完整性、约束、事务        |
 
 ## 测试架构
 
@@ -709,3 +710,4 @@ CI 流程包括：
 - [Reactor Test](https://projectreactor.io/docs/core/release/reference/#testing)
 - [AssertJ](https://assertj.github.io/doc/)
 - [JUnit 5](https://junit.org/junit5/docs/current/user-guide/)
+
