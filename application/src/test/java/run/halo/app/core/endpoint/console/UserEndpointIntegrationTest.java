@@ -25,6 +25,14 @@ import run.halo.app.core.extension.User;
 import run.halo.app.core.user.service.RoleService;
 import run.halo.app.extension.Metadata;
 import run.halo.app.extension.ReactiveExtensionClient;
+import run.halo.app.infra.exception.DuplicateNameException;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import run.halo.app.core.extension.Role;
+import run.halo.app.core.extension.User;
+import run.halo.app.core.user.service.RoleService;
+import run.halo.app.extension.Metadata;
+import run.halo.app.extension.ReactiveExtensionClient;
 
 @SpringBootTest
 @AutoConfigureWebTestClient
@@ -86,21 +94,27 @@ public class UserEndpointIntegrationTest {
 
         @Test
         void shouldFilterUsersWhenUserNameKeywordProvided() {
-            var expectUser = createUser("fake-user-search", "expected display name");
-            var unexpectedUser1 = createUser("fake-user-1", "first fake display name");
-            var unexpectedUser2 = createUser("fake-user-3", "second fake display name");
+            var expectUser = createUser("test-user-search-unique", "expected display name");
+            var unexpectedUser1 = createUser("test-user-1-unique", "first fake display name");
+            var unexpectedUser2 = createUser("test-user-3-unique", "second fake display name");
 
-            client.create(expectUser).block();
-            client.create(unexpectedUser1).block();
-            client.create(unexpectedUser2).block();
+            client.create(expectUser)
+                    .onErrorResume(DuplicateNameException.class, e -> Mono.just(expectUser))
+                    .block();
+            client.create(unexpectedUser1)
+                    .onErrorResume(DuplicateNameException.class, e -> Mono.just(unexpectedUser1))
+                    .block();
+            client.create(unexpectedUser2)
+                    .onErrorResume(DuplicateNameException.class, e -> Mono.just(unexpectedUser2))
+                    .block();
 
             when(roleService.list(anySet())).thenReturn(Flux.empty());
-            when(roleService.getRolesByUsernames(List.of("fake-user-search")))
-                    .thenReturn(Mono.just(Map.of("fake-user-search", Set.of("fake-super-role"))));
+            when(roleService.getRolesByUsernames(List.of("test-user-search-unique")))
+                    .thenReturn(Mono.just(Map.of("test-user-search-unique", Set.of("fake-super-role"))));
 
             webClient
                     .get()
-                    .uri("/apis/api.console.halo.run/v1alpha1/users?keyword=fake-user-search")
+                    .uri("/apis/api.console.halo.run/v1alpha1/users?keyword=test-user-search-unique")
                     .exchange()
                     .expectStatus()
                     .isOk()
@@ -108,7 +122,7 @@ public class UserEndpointIntegrationTest {
                     .jsonPath("$.items.length()")
                     .isEqualTo(1)
                     .jsonPath("$.items[0].user.metadata.name")
-                    .isEqualTo("fake-user-search");
+                    .isEqualTo("test-user-search-unique");
         }
     }
 
