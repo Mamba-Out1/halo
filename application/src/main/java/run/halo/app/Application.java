@@ -1,5 +1,4 @@
 package run.halo.app;
-
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.metrics.buffering.BufferingApplicationStartup;

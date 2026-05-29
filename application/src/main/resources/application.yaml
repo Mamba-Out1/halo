@@ -40,7 +40,7 @@ spring:
       enabled: true
 
 halo:
-  work-dir: ${user.home}/.halo2
+  work-dir: E:/halo-work
   attachment:
     resource-mappings:
       - pathPattern: /upload/**
