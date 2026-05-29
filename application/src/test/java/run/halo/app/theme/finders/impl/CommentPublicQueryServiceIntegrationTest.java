@@ -353,6 +353,17 @@ class CommentPublicQueryServiceIntegrationTest {
 
         @Test
         void desensitizeReply() throws JSONException {
+            // Create the ghost user first to ensure it exists with the correct display name
+            var ghostUser = new User();
+            ghostUser.setMetadata(new Metadata());
+            ghostUser.getMetadata().setName("ghost");
+            ghostUser.setSpec(new User.UserSpec());
+            ghostUser.getSpec().setDisplayName("已删除用户");
+            ghostUser.getSpec().setEmail("ghost@example.com");
+            client.create(ghostUser)
+                    .onErrorResume(DuplicateNameException.class, e -> Mono.just(ghostUser))
+                    .block();
+
             var reply = createReply();
             reply.getSpec().getOwner().setAnnotations(new HashMap<>() {
                 {
