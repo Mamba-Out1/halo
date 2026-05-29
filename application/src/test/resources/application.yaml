@@ -6,11 +6,10 @@ spring:
       enabled: detect
   r2dbc:
     # 支持通过环境变量覆盖数据库配置（用于 CI 环境）
-    url: ${SPRING_R2DBC_URL:}
-    username: ${SPRING_R2DBC_USERNAME:}
+    url: ${SPRING_R2DBC_URL:r2dbc:h2:mem:///halo-test?options=DB_CLOSE_DELAY=-1;MODE=MySQL;DATABASE_TO_LOWER=TRUE}
+    username: ${SPRING_R2DBC_USERNAME:sa}
     password: ${SPRING_R2DBC_PASSWORD:}
     name: halo-test
-    generate-unique-name: true
   sql:
     init:
       mode: always

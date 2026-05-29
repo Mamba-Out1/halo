@@ -77,7 +77,7 @@ SPRING_SQL_INIT_PLATFORM=mysql
 
 **文件**：`application/src/test/resources/application.yaml`
 
-**修改**：添加环境变量占位符
+**修改**：添加环境变量占位符，并提供默认值
 
 ```yaml
 # 修改前
@@ -94,16 +94,21 @@ spring:
 spring:
   r2dbc:
     # 支持通过环境变量覆盖数据库配置（用于 CI 环境）
-    url: ${SPRING_R2DBC_URL:}
-    username: ${SPRING_R2DBC_USERNAME:}
+    url: ${SPRING_R2DBC_URL:r2dbc:h2:mem:///halo-test?options=DB_CLOSE_DELAY=-1;MODE=MySQL;DATABASE_TO_LOWER=TRUE}
+    username: ${SPRING_R2DBC_USERNAME:sa}
     password: ${SPRING_R2DBC_PASSWORD:}
     name: halo-test
-    generate-unique-name: true
   sql:
     init:
       mode: always
       platform: ${SPRING_SQL_INIT_PLATFORM:h2}  # 默认 H2，可通过环境变量覆盖
 ```
+
+**关键点**：
+- ✅ 必须为 `url` 提供默认值，否则 Spring 无法解析空字符串
+- ✅ H2 URL 包含必要的选项：`DB_CLOSE_DELAY=-1` 保持数据库在内存中，`MODE=MySQL` 兼容 MySQL 语法
+- ✅ 默认用户名为 `sa`（H2 默认）
+- ✅ 密码默认为空
 
 **影响**：
 - ✅ 本地开发：默认使用 H2 内存数据库（无需配置）
