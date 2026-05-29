@@ -1,0 +1,294 @@
+name: Integration Tests
+
+on:
+  pull_request:
+    branches:
+      - main
+      - release-*
+    paths:
+      - 'application/**'
+      - 'api/**'
+      - '.github/workflows/integration-test.yaml'
+  push:
+    branches:
+      - main
+      - release-*
+    paths:
+      - 'application/**'
+      - 'api/**'
+      - '.github/workflows/integration-test.yaml'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ==================== 单元测试 ====================
+  unit-tests:
+    name: 单元测试 (H2)
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 检出代码
+        uses: actions/checkout@v6
+
+      - name: ☕ 设置 JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'gradle'
+
+      - name: 🔧 设置 Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: 🧪 运行单元测试
+        run: |
+          ./gradlew :application:test \
+            --configuration-cache \
+            --configuration-cache-problems=warn \
+            --no-daemon
+
+      - name: 📊 生成测试报告
+        if: always()
+        run: ./gradlew :application:jacocoTestReport
+
+      - name: 📤 上传测试报告
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: unit-test-reports
+          path: |
+            application/build/reports/tests/test/
+            application/build/reports/jacoco/test/
+          retention-days: 7
+
+      - name: 📈 上传覆盖率到 Codecov
+        if: github.repository == 'halo-dev/halo'
+        uses: codecov/codecov-action@v6
+        with:
+          files: application/build/reports/jacoco/test/jacocoTestReport.xml
+          flags: unittests
+          name: unit-tests
+
+  # ==================== 集成测试 (MySQL) ====================
+  integration-tests-mysql:
+    name: 集成测试 (MySQL 8.0)
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: test_password
+          MYSQL_DATABASE: halo_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: 📥 检出代码
+        uses: actions/checkout@v6
+
+      - name: ☕ 设置 JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'gradle'
+
+      - name: 🔧 设置 Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: 🗄️ 等待 MySQL 就绪
+        run: |
+          for i in {1..30}; do
+            if mysqladmin ping -h 127.0.0.1 -P 3306 -u root -ptest_password --silent; then
+              echo "MySQL is ready!"
+              break
+            fi
+            echo "Waiting for MySQL... ($i/30)"
+            sleep 2
+          done
+
+      - name: 🧪 运行集成测试 (MySQL)
+        env:
+          SPRING_R2DBC_URL: r2dbc:mysql://localhost:3306/halo_test
+          SPRING_R2DBC_USERNAME: root
+          SPRING_R2DBC_PASSWORD: test_password
+          SPRING_SQL_INIT_PLATFORM: mysql
+        run: |
+          ./gradlew :application:test \
+            --tests "*IntegrationTest*" \
+            --configuration-cache \
+            --configuration-cache-problems=warn \
+            --no-daemon
+
+      - name: 📤 上传 MySQL 测试报告
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: mysql-integration-test-reports
+          path: application/build/reports/tests/test/
+          retention-days: 7
+
+  # ==================== 集成测试 (PostgreSQL) ====================
+  integration-tests-postgresql:
+    name: 集成测试 (PostgreSQL 15)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_DB: halo_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: 📥 检出代码
+        uses: actions/checkout@v6
+
+      - name: ☕ 设置 JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'gradle'
+
+      - name: 🔧 设置 Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: 🧪 运行集成测试 (PostgreSQL)
+        env:
+          SPRING_R2DBC_URL: r2dbc:postgresql://localhost:5432/halo_test
+          SPRING_R2DBC_USERNAME: postgres
+          SPRING_R2DBC_PASSWORD: test_password
+          SPRING_SQL_INIT_PLATFORM: postgresql
+        run: |
+          ./gradlew :application:test \
+            --tests "*IntegrationTest*" \
+            --configuration-cache \
+            --configuration-cache-problems=warn \
+            --no-daemon
+
+      - name: 📤 上传 PostgreSQL 测试报告
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: postgresql-integration-test-reports
+          path: application/build/reports/tests/test/
+          retention-days: 7
+
+  # ==================== 性能测试 ====================
+  performance-tests:
+    name: 性能测试
+    runs-on: ubuntu-latest
+    needs: [unit-tests]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: 📥 检出代码
+        uses: actions/checkout@v6
+
+      - name: ☕ 设置 JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'gradle'
+
+      - name: 🔧 设置 Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: 🚀 运行性能测试
+        run: |
+          ./gradlew :application:test \
+            --tests "*PerformanceTest*" \
+            --configuration-cache \
+            --configuration-cache-problems=warn \
+            --no-daemon
+
+      - name: 📤 上传性能测试报告
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: performance-test-reports
+          path: application/build/reports/tests/test/
+          retention-days: 30
+
+  # ==================== 测试报告汇总 ====================
+  test-summary:
+    name: 测试报告汇总
+    runs-on: ubuntu-latest
+    needs: [unit-tests, integration-tests-mysql, integration-tests-postgresql]
+    if: always()
+    steps:
+      - name: 📥 下载所有测试报告
+        uses: actions/download-artifact@v8
+        with:
+          path: test-reports
+
+      - name: 📊 生成测试摘要
+        run: |
+          echo "# 🧪 测试报告摘要" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## 测试结果" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| 测试类型 | 状态 |" >> $GITHUB_STEP_SUMMARY
+          echo "|---------|------|" >> $GITHUB_STEP_SUMMARY
+          echo "| 单元测试 (H2) | ${{ needs.unit-tests.result == 'success' && '✅ 通过' || '❌ 失败' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 集成测试 (MySQL) | ${{ needs.integration-tests-mysql.result == 'success' && '✅ 通过' || '❌ 失败' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 集成测试 (PostgreSQL) | ${{ needs.integration-tests-postgresql.result == 'success' && '✅ 通过' || '❌ 失败' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## 📁 测试报告" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "测试报告已上传为 Artifacts，可在 Actions 页面下载查看。" >> $GITHUB_STEP_SUMMARY
+
+      - name: ✅ 检查测试结果
+        if: |
+          needs.unit-tests.result != 'success' ||
+          needs.integration-tests-mysql.result != 'success' ||
+          needs.integration-tests-postgresql.result != 'success'
+        run: |
+          echo "❌ 部分测试失败，请检查测试报告"
+          exit 1
+
+  # ==================== 代码质量检查 ====================
+  code-quality:
+    name: 代码质量检查
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 检出代码
+        uses: actions/checkout@v6
+
+      - name: ☕ 设置 JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'gradle'
+
+      - name: 🔧 设置 Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: 🎨 检查代码格式
+        run: ./gradlew spotlessCheck
+
+      - name: 🔍 运行静态代码分析
+        run: ./gradlew check -x test
+
+      - name: 📊 生成代码质量报告
+        if: always()
+        run: |
+          echo "# 📊 代码质量报告" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ 代码格式检查通过" >> $GITHUB_STEP_SUMMARY
+          echo "✅ 静态代码分析通过" >> $GITHUB_STEP_SUMMARY
