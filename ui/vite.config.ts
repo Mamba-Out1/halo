@@ -13,7 +13,8 @@ import { devPlugin } from "./src/vite/plugin-dev.ts";
 
 const DEV_SERVER_PORT = 3000;
 
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const command = process.env.VP_COMMAND;
 const isBuild = command === "build";
 const isTest = command === "test";
